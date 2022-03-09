@@ -38,6 +38,9 @@
 #if (BACNET_PROTOCOL_REVISION >= 17)
 #include "bacnet/basic/object/netport.h"
 #endif
+#if BACDL_BSC
+#include <libwebsockets.h>
+#endif
 
 /** @file dlenv.c  Initialize the DataLink configuration. */
 #if defined(BACDL_BIP)
@@ -481,6 +484,17 @@ void dlenv_init(void)
             bvlc_set_global_address_for_nat(&addr);
         }
     }
+
+#elif defined(BACDL_BSC)
+    pEnv = getenv("BACNET_SC_PRIMARY_HUB_ADDR");
+
+    pEnv = getenv("BACNET_SC_PRIMARY_HUB_PORT");
+
+    pEnv = getenv("BACNET_SC_PRIMARY_HUB_KEYFILE");
+    pEnv = getenv("BACNET_SC_PRIMARY_HUB_CAFILE");
+
+
+    
 #elif defined(BACDL_MSTP)
     pEnv = getenv("BACNET_MAX_INFO_FRAMES");
     if (pEnv) {

@@ -99,6 +99,18 @@ void routed_get_my_address(
 #define datalink_get_my_address bip6_get_my_address
 #define datalink_maintenance_timer(s) bvlc6_maintenance_timer(s)
 
+#elif defined(BACDL_BSC)
+#include "bacnet/datalink/sc.h"
+#define MAX_MPDU BSC_MPDU_MAX
+
+#define datalink_init bsc_init
+#define datalink_send_pdu bsc_send_pdu
+#define datalink_receive bsc_receive
+#define datalink_cleanup bsc_cleanup
+#define datalink_get_broadcast_address bsc_get_broadcast_address
+#define datalink_get_my_address bsc_get_my_address
+#define datalink_maintenance_timer(s) bsc_maintainence_timer(s)
+
 #elif defined(BACDL_ALL) || defined(BACDL_NONE)
 #include "bacnet/npdu.h"
 
@@ -169,9 +181,10 @@ extern "C" {
  * - BACDL_ETHERNET -- for Clause 7 ISO 8802-3 ("Ethernet") LAN
  * - BACDL_ARCNET   -- for Clause 8 ARCNET LAN
  * - BACDL_MSTP     -- for Clause 9 MASTER-SLAVE/TOKEN PASSING (MS/TP) LAN
- * - BACDL_BIP      -- for ANNEX J - BACnet/IPv4
+ * - BACDL_BIP      -- for ANNEX J - BACnet/IPv4 
  * - BACDL_BIP6     -- for ANNEX U - BACnet/IPv6
- * - BACDL_ALL      -- Unspecified for the build, so the transport can be
+ * - BACDL_BSC      -- for ANNEX AB - BACnet/SC
+* - BACDL_ALL      -- Unspecified for the build, so the transport can be
  *                     chosen at runtime from among these choices.
  * - BACDL_NONE      -- Unspecified for the build for unit testing
  * - Clause 10 POINT-TO-POINT (PTP) and Clause 11 EIA/CEA-709.1 ("LonTalk") LAN

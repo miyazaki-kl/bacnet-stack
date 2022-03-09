@@ -55,6 +55,11 @@ option(
   OFF)
 
 option(
+  BACDL_BSC
+  "compile with secure-connect support"
+  OFF)
+
+option(
   BACDL_NONE
   "compile without datalink"
   OFF)
@@ -343,6 +348,7 @@ add_library(${PROJECT_NAME}
     $<$<BOOL:${BACDL_MSTP}>:src/bacnet/datalink/crc.h>
     $<$<BOOL:${BACDL_MSTP}>:src/bacnet/datalink/crc.c>
     $<$<BOOL:${BACDL_MSTP}>:src/bacnet/datalink/cobs.c>
+    $<$<BOOL:${BACDL_BSC}>:src/bacnet/datalink/sc.c>
     src/bacnet/datalink/datalink.c
     src/bacnet/datalink/datalink.h
     src/bacnet/datalink/dlenv.c
@@ -427,6 +433,7 @@ target_compile_definitions(
   BACNET_PROTOCOL_REVISION=${BACNET_PROTOCOL_REVISION}
   $<$<BOOL:${BACDL_BIP}>:BACDL_BIP>
   $<$<BOOL:${BACDL_BIP6}>:BACDL_BIP6>
+  $<$<BOOL:${BACDL_BSC}>:BACDL_BSC>
   $<$<BOOL:${BACDL_ARCNET}>:BACDL_ARCNET>
   $<$<BOOL:${BACDL_MSTP}>:BACDL_MSTP>
   $<$<BOOL:${BACDL_ETHERNET}>:BACDL_ETHERNET>
@@ -442,6 +449,10 @@ add_library(
   ${PROJECT_NAME}::${PROJECT_NAME}
   ALIAS
   ${PROJECT_NAME})
+
+if(BACDL_BSC)
+  target_link_libraries(${PROJECT_NAME} PUBLIC websockets)
+endif()
 
 #
 # add ports
@@ -569,7 +580,7 @@ if(BACNET_STACK_BUILD_APPS)
   #   apps/ptransfer/s_ptransfer.c)
   # target_link_libraries(ptransfer PRIVATE ${PROJECT_NAME})
 
-  if(NOT BACDL_ETHERNET)
+  if((NOT BACDL_ETHERNET) AND (NOT BACDL_BSC))
     add_executable(readbdt apps/readbdt/main.c)
     target_link_libraries(readbdt PRIVATE ${PROJECT_NAME})
 
@@ -714,6 +725,7 @@ message(STATUS "BACNET: CMAKE_INSTALL_PREFIX:...........\"${CMAKE_INSTALL_PREFIX
 message(STATUS "BACNET: BACNET_PROTOCOL_REVISION:.......\"${BACNET_PROTOCOL_REVISION}\"")
 message(STATUS "BACNET: BACDL_BIP6:.....................\"${BACDL_BIP6}\"")
 message(STATUS "BACNET: BACDL_BIP:......................\"${BACDL_BIP}\"")
+message(STATUS "BACNET: BACDL_BSC:......................\"${BACDL_BSC}\"")
 message(STATUS "BACNET: BACDL_ARCNET:...................\"${BACDL_ARCNET}\"")
 message(STATUS "BACNET: BACDL_MSTP:.....................\"${BACDL_MSTP}\"")
 message(STATUS "BACNET: BACDL_ETHERNET:.................\"${BACDL_ETHERNET}\"")

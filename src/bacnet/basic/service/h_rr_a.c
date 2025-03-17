@@ -71,7 +71,7 @@ static void PrintReadRangeData(BACNET_READ_RANGE_DATA *data)
                  data->application_data_len,
                  &entry);
 
-       printf("result %d \n",result);
+    //    printf("result %d \n",result);
       printf("{\n");
       for (BACNET_TRENDLOG_RECORD *p = &entry; p != NULL; p = p->next) {
            printf(" {");

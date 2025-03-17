@@ -1564,19 +1564,19 @@
      bool first = true;
      int record_count = 0;  // レコード数をカウント
  
-     printf("rr_decode_trendlog_entries\n");
-     print_apdu_hex(apdu, apdu_len);
+    //  printf("rr_decode_trendlog_entries\n");
+    //  print_apdu_hex(apdu, apdu_len);
  
      while (apdu_len > 0) {
-         printf("Processing APDU: %02X (remaining length: %d)\n", apdu[0], apdu_len);
+        //  printf("Processing APDU: %02X (remaining length: %d)\n", apdu[0], apdu_len);
  
          while ((apdu[0] != 0x0E) && (apdu[0] != 0x1E) && (apdu_len > 0)) {
-             printf("Skipping unexpected APDU tag: %02X (remaining: %d)\n", apdu[0], apdu_len);
+            //  printf("Skipping unexpected APDU tag: %02X (remaining: %d)\n", apdu[0], apdu_len);
              apdu++;
              apdu_len--;
          
              if (apdu_len == 0) {
-                 printf("End of APDU reached while searching for 0E or 1E\n");
+                //  printf("End of APDU reached while searching for 0E or 1E\n");
                  return 0;
              }
          }
@@ -1585,7 +1585,7 @@
              if (!first && rec) {  
                  rec->next = calloc(1, sizeof(BACNET_TRENDLOG_RECORD));
                  if (!rec->next) {
-                     printf("Failed to allocate memory\n");
+                    //  printf("Failed to allocate memory\n");
                      return -1;  // メモリ確保失敗
                  }
                  rec = rec->next;
@@ -1594,14 +1594,14 @@
  
              len = bacapp_decode_context_datetime(apdu, 0, &rec->timestamp);
              if (len <= 0) {
-                 printf("Datetime decoding failed, len=%d\n", len);
+                //  printf("Datetime decoding failed, len=%d\n", len);
                  return -1;
              }
-             printf("Decoded timestamp, moving forward by %d bytes\n", len);
+            //  printf("Decoded timestamp, moving forward by %d bytes\n", len);
              apdu += len;
              apdu_len -= len;
          } else if (IS_CONTEXT_SPECIFIC(apdu[0]) && decode_is_opening_tag_number(apdu, 1)) {
-             printf("Found opening tag for value (1)\n");
+            //  printf("Found opening tag for value (1)\n");
  
              apdu++;
              apdu_len--;
@@ -1647,42 +1647,42 @@
              }
  
              if (len <= 0) {
-                 printf("Failed to decode value at record %d\n", record_count);
+                //  printf("Failed to decode value at record %d\n", record_count);
                  return -1;
              }
-             printf("Decoded value, moving forward by %d bytes\n", len);
+            //  printf("Decoded value, moving forward by %d bytes\n", len);
              apdu += len;
              apdu_len -= len;
  
              if (IS_CONTEXT_SPECIFIC(apdu[0]) && decode_is_closing_tag_number(apdu, 1)) {
-                 printf("Found closing tag (1)\n");
+                //  printf("Found closing tag (1)\n");
                  apdu++;
                  apdu_len--;
              } else {
-                 printf("Closing tag for value (1) not found\n");
+                //  printf("Closing tag for value (1) not found\n");
                  return -1;
              }
  
              record_count++;  // レコード数をカウント
-             printf("Decoded 1 record (total: %d)\n", record_count);
+            //  printf("Decoded 1 record (total: %d)\n", record_count);
          } else if (IS_CONTEXT_SPECIFIC(apdu[0]) && decode_is_opening_tag_number(apdu, 2)) {
-             printf("Found opening tag for status (2)\n");
+            //  printf("Found opening tag for status (2)\n");
  
              len = decode_context_bitstring(apdu, 2, &rec->status);
              if (len <= 0) {
-                 printf("Failed to decode status\n");
+                //  printf("Failed to decode status\n");
                  return -1;
              }
-             printf("Decoded status, moving forward by %d bytes\n", len);
+            //  printf("Decoded status, moving forward by %d bytes\n", len);
              apdu += len;
              apdu_len -= len;
          } else {
-             printf("Unexpected APDU tag: %02X (remaining length: %d)\n", apdu[0], apdu_len);
+            //  printf("Unexpected APDU tag: %02X (remaining length: %d)\n", apdu[0], apdu_len);
              return -1;
          }
      }
  
-     printf("Decoded %d TrendLog records\n", record_count);
+    //  printf("Decoded %d TrendLog records\n", record_count);
      return record_count;  // デコードしたレコード数を返す
  }
  

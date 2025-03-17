@@ -43,9 +43,7 @@
 /* for debugging... */
 static void PrintReadRangeData(BACNET_READ_RANGE_DATA *data)
 {
-#ifdef BACAPP_PRINT_ENABLED
     BACNET_OBJECT_PROPERTY_VALUE object_value; /* for bacapp printing */
-#endif
     BACNET_APPLICATION_DATA_VALUE value;
     BACNET_TRENDLOG_RECORD entry;
     int len = 0;
@@ -68,27 +66,30 @@ static void PrintReadRangeData(BACNET_READ_RANGE_DATA *data)
 
       // make sure it works if there is only one entry;
       entry.next = NULL;
-      rr_decode_trendlog_entries(data->application_data,
-				 data->application_data_len,
-				 &entry);
+      int result = 0;
+      result = rr_decode_trendlog_entries(data->application_data,
+                 data->application_data_len,
+                 &entry);
+
+       printf("result %d \n",result);
       printf("{\n");
       for (BACNET_TRENDLOG_RECORD *p = &entry; p != NULL; p = p->next) {
-	printf(" {");
-	object_value.value = &value;
-	value.tag = BACNET_APPLICATION_TAG_DATE;
-	value.type.Date = p->timestamp.date;
-	bacapp_print_value(stdout, &object_value);
-
-	printf(", ");
-	value.tag = BACNET_APPLICATION_TAG_TIME;
-	value.type.Time = p->timestamp.time;
-	bacapp_print_value(stdout, &object_value);
-
-	printf(", ");
-	object_value.value = &p->value;
-	bacapp_print_value(stdout, &object_value);
-
-	printf(" }\n");
+           printf(" {");
+           object_value.value = &value;
+           value.tag = BACNET_APPLICATION_TAG_DATE;
+           value.type.Date = p->timestamp.date;
+           bacapp_print_value(stdout, &object_value);
+       
+           printf(", ");
+           value.tag = BACNET_APPLICATION_TAG_TIME;
+           value.type.Time = p->timestamp.time;
+           bacapp_print_value(stdout, &object_value);
+       
+           printf(", ");
+           object_value.value = &p->value;
+           bacapp_print_value(stdout, &object_value);
+       
+           printf(" }\n");
       }
       printf("}\n");
     }
